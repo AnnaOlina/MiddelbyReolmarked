@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,8 +10,18 @@ namespace MiddelbyReolmarked.Models
     public class Customer
     {
         public int CustomerId { get; set; }
+
+        [Required(ErrorMessage = "CustomerName må ikke være tom")]
+        [StringLength(100)]
         public string CustomerName { get; set; }
-        public string CustomerEmail { get; set; }
+
+        [Required(ErrorMessage = "CustomerPhone må ikke være tom")]
+        [StringLength(100)]
         public string CustomerPhone { get; set; }
+
+
+        [Required(ErrorMessage = "CustomerEmail må ikke være tom")]
+        [StringLength(100)]
+        public string CustomerEmail { get; set; }
     }
 }
