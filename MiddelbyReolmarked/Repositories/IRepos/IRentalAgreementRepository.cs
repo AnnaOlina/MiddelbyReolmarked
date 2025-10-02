@@ -9,7 +9,7 @@ namespace MiddelbyReolmarked.Repositories.IRepos
 {
     public interface IRentalAgreementRepository
     {
-        // Her defineres metoder til CRUD operationer for RentalAgreement entiteten
+        // Her defineres metoder til CRUD operationer for RentalAgreement entiteten i databasen
         void AddRentalAgreement(RentalAgreement rentalAgreement);
         RentalAgreement GetRentalAgreementById(int id);
         IEnumerable<RentalAgreement> GetAllRentalAgreements();

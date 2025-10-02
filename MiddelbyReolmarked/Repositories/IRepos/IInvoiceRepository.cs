@@ -8,7 +8,7 @@ namespace MiddelbyReolmarked.Repositories.IRepos
 {
     public interface IInvoiceRepository
     {
-        // Her defineres metoder til CRUD operationer for Invoice entiteten
+        // Her defineres metoder til CRUD operationer for Invoice entiteten i databasen
         void AddInvoice(Models.Invoice invoice);
         Models.Invoice GetInvoiceById(int id);
         IEnumerable<Models.Invoice> GetAllInvoices();

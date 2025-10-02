@@ -12,7 +12,7 @@ namespace MiddelbyReolmarked.Models
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
-        public decimal LineTotal => UnitPrice * Quantity;
+        //public decimal LineTotal => UnitPrice * Quantity;
         public int InvoiceId { get; set; }
         public int RentalAgreementId { get; set; }
     }
