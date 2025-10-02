@@ -19,13 +19,20 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
         {
             using var conn = new SqlConnection(_cs);
             conn.Open();
-            var sql = @"INSERT INTO INVOICELINE (Description, UnitPrice, Quantity, LineTotal, InvoiceId, RentalAgreementId)
-                        VALUES (@Description, @UnitPrice, @Quantity, @LineTotal, @InvoiceId, @RentalAgreementId)";
+            /* var sql = @"INSERT INTO INVOICELINE (Description, UnitPrice, Quantity, LineTotal, InvoiceId, RentalAgreementId)
+                        VALUES (@Description, @UnitPrice, @Quantity, @LineTotal, @InvoiceId, @RentalAgreementId)";    
+            * LineTotal fjernet fra INSERT fordi det er en beregnet kolonne
+            * Den bør ikke indsættes direkte
+            * Den bør ikke have egen kolonne i databasen og dermed heller ikke være en property i modellen
+            * Hvis LineTotal skal gemmes i databasen, bør det gøres via en trigger eller beregnes ved forespørgslen
+            */
+            var sql = @"INSERT INTO INVOICELINE (Description, UnitPrice, Quantity, InvoiceId, RentalAgreementId)
+                        VALUES (@Description, @UnitPrice, @Quantity, @InvoiceId, @RentalAgreementId)";
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@Description", invoiceLine.Description);
             cmd.Parameters.AddWithValue("@UnitPrice", invoiceLine.UnitPrice);
             cmd.Parameters.AddWithValue("@Quantity", invoiceLine.Quantity);
-            cmd.Parameters.AddWithValue("@LineTotal", (object)invoiceLine.LineTotal ?? DBNull.Value);
+            //cmd.Parameters.AddWithValue("@LineTotal", (object)invoiceLine.LineTotal ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@InvoiceId", invoiceLine.InvoiceId);
             cmd.Parameters.AddWithValue("@RentalAgreementId", invoiceLine.RentalAgreementId);
             cmd.ExecuteNonQuery();
@@ -85,13 +92,14 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
         {
             using var conn = new SqlConnection(_cs);
             conn.Open();
-            var sql = @"UPDATE INVOICELINE SET Description = @Description, UnitPrice = @UnitPrice, Quantity = @Quantity, LineTotal = @LineTotal, InvoiceId = @InvoiceId, RentalAgreementId = @RentalAgreementId WHERE InvoiceLineId = @Id";
+            //var sql = @"UPDATE INVOICELINE SET Description = @Description, UnitPrice = @UnitPrice, Quantity = @Quantity, LineTotal = @LineTotal, InvoiceId = @InvoiceId, RentalAgreementId = @RentalAgreementId WHERE InvoiceLineId = @Id";
+            var sql = @"UPDATE INVOICELINE SET Description = @Description, UnitPrice = @UnitPrice, Quantity = @Quantity, InvoiceId = @InvoiceId, RentalAgreementId = @RentalAgreementId WHERE InvoiceLineId = @Id";
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@Id", invoiceLine.InvoiceLineId);
             cmd.Parameters.AddWithValue("@Description", invoiceLine.Description);
             cmd.Parameters.AddWithValue("@UnitPrice", invoiceLine.UnitPrice);
             cmd.Parameters.AddWithValue("@Quantity", invoiceLine.Quantity);
-            cmd.Parameters.AddWithValue("@LineTotal", (object)invoiceLine.LineTotal ?? DBNull.Value);
+            //cmd.Parameters.AddWithValue("@LineTotal", (object)invoiceLine.LineTotal ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@InvoiceId", invoiceLine.InvoiceId);
             cmd.Parameters.AddWithValue("@RentalAgreementId", invoiceLine.RentalAgreementId);
             cmd.ExecuteNonQuery();
