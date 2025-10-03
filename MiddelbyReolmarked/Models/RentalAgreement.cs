@@ -14,6 +14,12 @@ namespace MiddelbyReolmarked.Models
         public DateTime? EndDate { get; set; } // <-- nullable her!
         public int CustomerId { get; set; }
         public int RackId { get; set; }
-        public int RentalStatusId { get; set; }
+        public RentalStatus RentalStatus { get; set; }
+    }
+
+    public enum RentalStatus
+    {
+        Available = 1,
+        Rented = 2,
     }
 }

@@ -1,15 +1,21 @@
 using System.ComponentModel;
 using MiddelbyReolmarked.Models;
+using MiddelbyReolmarked.Repositories.IRepos;
 using MiddelbyReolmarked.ViewModels.ViewModelHelpers;
 
 namespace MiddelbyReolmarked.ViewModels
 {
     public class CustomerViewModel : BaseViewModel, IDataErrorInfo
     {
+        private readonly ICustomerRepository _customerRepository;
         private Customer _customer;
 
-        public CustomerViewModel(Customer customer)
+        public CustomerViewModel(
+            ICustomerRepository customerRepository,
+            Customer customer
+        )
         {
+            _customerRepository = customerRepository;
             _customer = customer;
         }
 

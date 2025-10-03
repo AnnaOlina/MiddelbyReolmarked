@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using MiddelbyReolmarked.Models;
 using MiddelbyReolmarked.Repositories.IRepos;
-{
-    
-}
 
 namespace MiddelbyReolmarked.Repositories.DbRepos
 {

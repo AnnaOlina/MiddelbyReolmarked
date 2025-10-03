@@ -1,6 +1,5 @@
 using System.Windows.Input;
 using MiddelbyReolmarked.Models;
-using MiddelbyReolmarked.Repositories.IRepos;
 using MiddelbyReolmarked.ViewModels.ViewModelHelpers;
 
 namespace MiddelbyReolmarked.ViewModels
@@ -8,9 +7,11 @@ namespace MiddelbyReolmarked.ViewModels
     public class MainViewModel : BaseViewModel
     {
         // FIELDS
-        private readonly ICustomerRepository _customerRepository;
-        private readonly IRackRepository _rackRepository;
-        private readonly IRentalAgreementRepository _rentalAgreementRepository;
+        private readonly RentalAgreementViewModel _rentalAgreementViewModel;
+        private readonly RackListViewModel _rackListViewModel;
+        private readonly RackListViewModel _availableRackListViewModel;
+        private readonly CustomerListViewModel _customerListViewModel;
+        private readonly CustomerViewModelFactory _customerViewModelFactory;
 
         private BaseViewModel _currentView;
 
@@ -33,55 +34,62 @@ namespace MiddelbyReolmarked.ViewModels
         public ICommand ShowAvailableRacksViewCommand { get; }
         public ICommand ShowRackListViewCommand { get; }
         public ICommand ShowCustomerListViewCommand { get; }
+        public ICommand ShowCustomerViewCommand { get; }
 
         // CONSTRUCTOR
         public MainViewModel(
-            ICustomerRepository customerRepository,
-            IRackRepository rackRepository,
-            IRentalAgreementRepository rentalAgreementRepository)
+            RentalAgreementViewModel rentalAgreementViewModel,
+            RackListViewModel rackListViewModel,
+            RackListViewModel availableRackListViewModel,
+            CustomerListViewModel customerListViewModel,
+            CustomerViewModelFactory customerViewModelFactory
+        )
         {
-            _customerRepository = customerRepository;
-            _rackRepository = rackRepository;
-            _rentalAgreementRepository = rentalAgreementRepository;
+            _rentalAgreementViewModel = rentalAgreementViewModel;
+            _rackListViewModel = rackListViewModel;
+            _availableRackListViewModel = availableRackListViewModel;
+            _customerListViewModel = customerListViewModel;
+            _customerViewModelFactory = customerViewModelFactory;
+            customerListViewModel.OnCustomerSelected = (customer) =>
+            {
+                CurrentView = _customerViewModelFactory.Create(customer);
+            };
 
-            ShowRentalAgreementViewCommand = new RelayCommand(ShowRentalAgreementView);
-            ShowAvailableRacksViewCommand = new RelayCommand(ShowAvailableRacksView);
-            ShowRackListViewCommand = new RelayCommand(ShowRackListView);
-            ShowCustomerListViewCommand = new RelayCommand(ShowCustomerListView);
+            ShowRentalAgreementViewCommand = new RelayCommand(_ => ShowRentalAgreementView());
+            ShowAvailableRacksViewCommand = new RelayCommand(_ => ShowAvailableRacksView());
+            ShowRackListViewCommand = new RelayCommand(_ => ShowRackListView());
+            ShowCustomerListViewCommand = new RelayCommand(_ => ShowCustomerListView());
+            ShowCustomerViewCommand = new RelayCommand(_ => ShowCustomerView());
 
-            // Startside: fx rack-oversigt
-            CurrentView = new RackListViewModel(_rackRepository);
+            //Startside: fx rack-oversigt
+            _currentView = rackListViewModel;
         }
 
         // METHODS
 
-        private void ShowRentalAgreementView()
+        public void ShowRentalAgreementView()
         {
-            CurrentView = new RentalAgreementViewModel(
-                _rentalAgreementRepository,
-                _rackRepository,
-                _customerRepository,
-                // Hvis du har RentalStatusRepository, tilføj det her
-                null
-            );
+            CurrentView = _rentalAgreementViewModel;
         }
 
-        private void ShowAvailableRacksView()
+        public void ShowAvailableRacksView()
         {
-            // Her kan du vise en ViewModel med kun ledige reoler
-            CurrentView = new RackListViewModel(_rackRepository);
-            // Evt. filtrer listen i ViewModel
+            CurrentView = _availableRackListViewModel;
         }
 
-        private void ShowRackListView()
+        public void ShowRackListView()
         {
-            CurrentView = new RackListViewModel(_rackRepository);
+            CurrentView = _rackListViewModel;
         }
 
-        private void ShowCustomerListView()
+        public void ShowCustomerListView()
         {
-            // Her kan du vise en ViewModel med alle kunder
-            CurrentView = new CustomerListViewModel(_customerRepository);
+            CurrentView = _customerListViewModel;
+        }
+
+        public void ShowCustomerView()
+        {
+            CurrentView = _customerViewModelFactory.Create(new Customer());
         }
     }
 }

@@ -10,19 +10,19 @@ namespace MiddelbyReolmarked.ViewModels
     {
         private readonly IRackRepository _rackRepository;
 
-        private ObservableCollection<RackViewModel> _racks;
-        private RackViewModel _selectedRack;
+        private ObservableCollection<Rack> _racks;
+        private Rack _selectedRack;
         private string _searchRackNumber;
         private string _errorMessage;
 
         public RackListViewModel(IRackRepository rackRepository)
         {
             _rackRepository = rackRepository;
-            _racks = new ObservableCollection<RackViewModel>();
+            _racks = new ObservableCollection<Rack>();
             LoadRacks();
         }
 
-        public ObservableCollection<RackViewModel> Racks
+        public ObservableCollection<Rack> Racks
         {
             get { return _racks; }
             set
@@ -35,7 +35,7 @@ namespace MiddelbyReolmarked.ViewModels
             }
         }
 
-        public RackViewModel SelectedRack
+        public Rack SelectedRack
         {
             get { return _selectedRack; }
             set
@@ -82,7 +82,7 @@ namespace MiddelbyReolmarked.ViewModels
             var racksFromRepo = _rackRepository.GetAllRacks();
             foreach (var rack in racksFromRepo)
             {
-                Racks.Add(new RackViewModel(rack));
+                Racks.Add(rack);
             }
         }
 
@@ -108,10 +108,10 @@ namespace MiddelbyReolmarked.ViewModels
         }
 
         // Filtrer ledige reoler
-        public ObservableCollection<RackViewModel> GetAvailableRacks()
+        public ObservableCollection<Rack> GetAvailableRacks()
         {
             var availableIds = _rackRepository.ListAvailableRackIds();
-            var availableRacks = new ObservableCollection<RackViewModel>();
+            var availableRacks = new ObservableCollection<Rack>();
 
             foreach (var rack in Racks)
             {

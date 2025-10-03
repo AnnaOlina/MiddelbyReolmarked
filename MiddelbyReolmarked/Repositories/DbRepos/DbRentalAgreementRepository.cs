@@ -33,7 +33,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                     cmd.Parameters.AddWithValue("@StartDate", rental.StartDate);
                     cmd.Parameters.AddWithValue("@EndDate", rental.EndDate);
                     cmd.Parameters.AddWithValue("@CustomerId", rental.CustomerId);
-                    cmd.Parameters.AddWithValue("@RentalStatusId", rental.RentalStatusId);
+                    cmd.Parameters.AddWithValue("@RentalStatus", rental.RentalStatus);
                     cmd.Parameters.AddWithValue("@RackId", rental.RackId);  // Rettet ReolId til RackId
                     cmd.ExecuteNonQuery();
                 }
@@ -60,7 +60,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                                 StartDate = reader.GetDateTime(1),
                                 EndDate = reader.GetDateTime(2),
                                 CustomerId = reader.GetInt32(3),
-                                RentalStatusId = reader.GetInt32(4),
+                                RentalStatus = (RentalStatus)reader.GetInt32(4),
                                 RackId = reader.GetInt32(5)
                             };
                         }
@@ -89,7 +89,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                             rental.StartDate = reader.GetDateTime(1);
                             rental.EndDate = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2);
                             rental.CustomerId = reader.GetInt32(3);
-                            rental.RentalStatusId = reader.GetInt32(4);
+                            rental.RentalStatus = (RentalStatus)reader.GetInt32(4);
                             rental.RackId = reader.GetInt32(5);
                             list.Add(rental);
                         }
@@ -114,7 +114,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                     cmd.Parameters.AddWithValue("@StartDate", rental.StartDate);
                     cmd.Parameters.AddWithValue("@EndDate", rental.EndDate);
                     cmd.Parameters.AddWithValue("@CustomerId", rental.CustomerId);
-                    cmd.Parameters.AddWithValue("@RentalStatusId", rental.RentalStatusId);
+                    cmd.Parameters.AddWithValue("@RentalStatus", rental.RentalStatus);
                     cmd.Parameters.AddWithValue("@RackId", rental.RackId);
                     cmd.ExecuteNonQuery();
                 }

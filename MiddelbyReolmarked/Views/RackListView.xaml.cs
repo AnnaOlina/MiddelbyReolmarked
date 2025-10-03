@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,21 +12,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.Extensions.Configuration;
 using MiddelbyReolmarked.Repositories.DbRepos;
 using MiddelbyReolmarked.ViewModels;
+using Microsoft.Extensions.Configuration;
 
-namespace MiddelbyReolmarked
+namespace MiddelbyReolmarked.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for RackListView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class RackListView : UserControl
     {
-        public MainWindow(MainViewModel mainViewModel)
+        public RackListView()
         {
             InitializeComponent();
-            DataContext = mainViewModel;
         }
     }
 }

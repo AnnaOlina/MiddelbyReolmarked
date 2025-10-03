@@ -1,9 +1,20 @@
 ﻿<Application x:Class="MiddelbyReolmarked.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:MiddelbyReolmarked"
-             StartupUri="Views/MainWindow.xaml">
+             xmlns:views="clr-namespace:MiddelbyReolmarked.Views"
+             xmlns:vm="clr-namespace:MiddelbyReolmarked.ViewModels">
     <Application.Resources>
-         
+        <DataTemplate DataType="{x:Type vm:CustomerListViewModel}">
+            <views:CustomerListView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RackListViewModel}">
+            <views:RackListView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RentalAgreementViewModel}">
+            <views:RentalAgreementView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CustomerViewModel}">
+            <views:CustomerView />
+        </DataTemplate>
     </Application.Resources>
 </Application>

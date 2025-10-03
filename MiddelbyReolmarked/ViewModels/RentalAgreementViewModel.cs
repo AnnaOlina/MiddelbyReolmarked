@@ -11,7 +11,6 @@ namespace MiddelbyReolmarked.ViewModels
         private readonly IRentalAgreementRepository _rentalAgreementRepository;
         private readonly IRackRepository _rackRepository;
         private readonly ICustomerRepository _customerRepository;
-        private readonly IRentalStatusRepository _rentalStatusRepository;
 
         private ObservableCollection<RentalAgreement> _rentalAgreements;
         private RentalAgreement _selectedRentalAgreement;
@@ -20,13 +19,11 @@ namespace MiddelbyReolmarked.ViewModels
         public RentalAgreementViewModel(
             IRentalAgreementRepository rentalAgreementRepository,
             IRackRepository rackRepository,
-            ICustomerRepository customerRepository,
-            IRentalStatusRepository rentalStatusRepository)
+            ICustomerRepository customerRepository)
         {
             _rentalAgreementRepository = rentalAgreementRepository;
             _rackRepository = rackRepository;
             _customerRepository = customerRepository;
-            _rentalStatusRepository = rentalStatusRepository;
 
             _rentalAgreements = new ObservableCollection<RentalAgreement>();
             LoadRentalAgreements();
@@ -108,7 +105,7 @@ namespace MiddelbyReolmarked.ViewModels
                 ErrorMessage = "Vælg startdato.";
                 return;
             }
-            if (newAgreement.RentalStatusId <= 0)
+            if (newAgreement.RentalStatus <= 0)
             {
                 ErrorMessage = "Vælg status.";
                 return;
