@@ -11,21 +11,26 @@ namespace MiddelbyReolmarked.ViewModels
         private readonly IRentalAgreementRepository _rentalAgreementRepository;
         private readonly IRackRepository _rackRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IRentalAgreementRackRepository _rentalAgreementRackRepository;
 
         private ObservableCollection<RentalAgreement> _rentalAgreements;
+        private ObservableCollection<Rack> _selectedRacks;
         private RentalAgreement _selectedRentalAgreement;
         private string _errorMessage;
 
         public RentalAgreementViewModel(
             IRentalAgreementRepository rentalAgreementRepository,
             IRackRepository rackRepository,
-            ICustomerRepository customerRepository)
+            ICustomerRepository customerRepository,
+            IRentalAgreementRackRepository rentalAgreementRackRepository)
         {
             _rentalAgreementRepository = rentalAgreementRepository;
             _rackRepository = rackRepository;
             _customerRepository = customerRepository;
+            _rentalAgreementRackRepository = rentalAgreementRackRepository;
 
             _rentalAgreements = new ObservableCollection<RentalAgreement>();
+            _selectedRacks = new ObservableCollection<Rack>();
             LoadRentalAgreements();
         }
 
@@ -38,6 +43,19 @@ namespace MiddelbyReolmarked.ViewModels
                 {
                     _rentalAgreements = value;
                     OnPropertyChanged(nameof(RentalAgreements));
+                }
+            }
+        }
+
+        public ObservableCollection<Rack> SelectedRacks
+        {
+            get { return _selectedRacks; }
+            set
+            {
+                if (_selectedRacks != value)
+                {
+                    _selectedRacks = value;
+                    OnPropertyChanged(nameof(SelectedRacks));
                 }
             }
         }
@@ -80,7 +98,23 @@ namespace MiddelbyReolmarked.ViewModels
             }
         }
 
-        // Opret ny lejeaftale
+        // Hent reoler til en given lejeaftale
+        public ObservableCollection<Rack> LoadRacksForAgreement(int rentalAgreementId)
+        {
+            var racks = new ObservableCollection<Rack>();
+            var links = _rentalAgreementRackRepository.GetByRentalAgreementId(rentalAgreementId);
+            foreach (var rar in links)
+            {
+                var rack = _rackRepository.GetRackById(rar.RackId);
+                if (rack != null)
+                {
+                    racks.Add(rack);
+                }
+            }
+            return racks;
+        }
+
+        // Opret ny lejeaftale og tilknyt reoler via linking-tabel
         public void AddRentalAgreement(RentalAgreement newAgreement)
         {
             ErrorMessage = "";
@@ -95,34 +129,36 @@ namespace MiddelbyReolmarked.ViewModels
                 ErrorMessage = "Vælg en kunde.";
                 return;
             }
-            if (newAgreement.RackId <= 0)
-            {
-                ErrorMessage = "Vælg en reol.";
-                return;
-            }
             if (newAgreement.StartDate == DateTime.MinValue)
             {
                 ErrorMessage = "Vælg startdato.";
                 return;
             }
-            if (newAgreement.RentalStatus <= 0)
+            if (SelectedRacks == null || SelectedRacks.Count == 0)
             {
-                ErrorMessage = "Vælg status.";
+                ErrorMessage = "Vælg mindst én reol.";
                 return;
             }
 
-            // Tjek om reolen er ledig
-            var availableIds = _rackRepository.ListAvailableRackIds();
-            if (!availableIds.Contains(newAgreement.RackId))
-            {
-                ErrorMessage = "Reolen er ikke ledig.";
-                return;
-            }
-
+            // Opret lejeaftale
             _rentalAgreementRepository.AddRentalAgreement(newAgreement);
+
+            // Find lejeaftalens id (fx ved at hente det sidste oprettede, eller ændre AddRentalAgreement til at returnere id)
+            var agreementId = newAgreement.RentalAgreementId; // Hvis id genereres i AddRentalAgreement
+
+            // Tilknyt racks via linking-tabel
+            foreach (var rack in SelectedRacks)
+            {
+                _rentalAgreementRackRepository.AddRentalAgreementRack(new RentalAgreementRack
+                {
+                    RentalAgreementId = agreementId,
+                    RackId = rack.RackId
+                });
+            }
+
             LoadRentalAgreements();
         }
-
+             
         // Afslut lejeaftale (sæt slutdato)
         public void EndRentalAgreement(RentalAgreement agreement, DateTime endDate)
         {
@@ -141,45 +177,6 @@ namespace MiddelbyReolmarked.ViewModels
             agreement.EndDate = endDate;
             _rentalAgreementRepository.UpdateRentalAgreement(agreement);
             LoadRentalAgreements();
-        }
-
-        // Simpel validering for binding
-        public string this[string columnName]
-        {
-            get
-            {
-                if (SelectedRentalAgreement == null)
-                {
-                    return null;
-                }
-                if (columnName == nameof(SelectedRentalAgreement.CustomerId))
-                {
-                    if (SelectedRentalAgreement.CustomerId <= 0)
-                    {
-                        return "Vælg en kunde.";
-                    }
-                }
-                if (columnName == nameof(SelectedRentalAgreement.RackId))
-                {
-                    if (SelectedRentalAgreement.RackId <= 0)
-                    {
-                        return "Vælg en reol.";
-                    }
-                }
-                if (columnName == nameof(SelectedRentalAgreement.StartDate))
-                {
-                    if (SelectedRentalAgreement.StartDate == DateTime.MinValue)
-                    {
-                        return "Vælg startdato.";
-                    }
-                }
-                return null;
-            }
-        }
-
-        public string Error
-        {
-            get { return null; }
         }
     }
 }

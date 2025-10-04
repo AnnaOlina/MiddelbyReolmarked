@@ -26,15 +26,18 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             {
                 conn.Open();
                 var sql = @"INSERT INTO RENTALAGREEMENT 
-                            (StartDate, EndDate, CustomerId, RentalStatus, RackId) 
-                            VALUES (@Price, @StartDate, @CustomerId, @RentalStatus, @RackId)";  // Rettet RentalStatusId til RentalStatus, da det nu er en enum.
+                            (StartDate, EndDate, CustomerId) 
+                            VALUES (@Price, @StartDate, @CustomerId)";
+                /* Fjernet RentalStatus, da den ikke bruges eksplicit ved oprettelse. 
+                 * Den sættes implicit til 'Aktiv' i databasen.
+                 * Fjernet RackId, da den i stedet skal bruges i en Linking-table. 
+                 * Opretter en tilsvarende modelklasse og repository for denne.
+                 */
                 using (var cmd = new SqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@StartDate", rental.StartDate);
                     cmd.Parameters.AddWithValue("@EndDate", rental.EndDate);
                     cmd.Parameters.AddWithValue("@CustomerId", rental.CustomerId);
-                    cmd.Parameters.AddWithValue("@RentalStatus", rental.RentalStatus);
-                    cmd.Parameters.AddWithValue("@RackId", rental.RackId);  // Rettet ReolId til RackId
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -45,7 +48,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             using (var conn = new SqlConnection(_cs))
             {
                 conn.Open();
-                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId, RentalStatus, RackId 
+                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId 
                             FROM RentalAgreements WHERE RentalAgreementId = @Id";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -59,9 +62,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                                 RentalAgreementId = reader.GetInt32(0),
                                 StartDate = reader.GetDateTime(1),
                                 EndDate = reader.GetDateTime(2),
-                                CustomerId = reader.GetInt32(3),
-                                RentalStatus = (RentalStatus)reader.GetInt32(4),
-                                RackId = reader.GetInt32(5)
+                                CustomerId = reader.GetInt32(3)
                             };
                         }
                     }
@@ -76,7 +77,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             using (var conn = new SqlConnection(_cs))
             {
                 conn.Open();
-                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId, RentalStatus, RackId 
+                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId
                     FROM RENTALAGREEMENT";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -89,8 +90,6 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                             rental.StartDate = reader.GetDateTime(1);
                             rental.EndDate = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2);
                             rental.CustomerId = reader.GetInt32(3);
-                            rental.RentalStatus = (RentalStatus)reader.GetInt32(4);
-                            rental.RackId = reader.GetInt32(5);
                             list.Add(rental);
                         }
                     }
@@ -105,8 +104,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             {
                 conn.Open();
                 var sql = @"UPDATE RENTALAGREEMENT SET 
-                            StartDate = @StartDate, EndDate = @EndDate, CustomerId = @CustomerId, 
-                            RentalStatus = @RentalStatus, RackId = @RackId 
+                            StartDate = @StartDate, EndDate = @EndDate, CustomerId = @CustomerId 
                             WHERE RentalAgreementId = @Id";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -114,8 +112,6 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                     cmd.Parameters.AddWithValue("@StartDate", rental.StartDate);
                     cmd.Parameters.AddWithValue("@EndDate", rental.EndDate);
                     cmd.Parameters.AddWithValue("@CustomerId", rental.CustomerId);
-                    cmd.Parameters.AddWithValue("@RentalStatus", rental.RentalStatus);
-                    cmd.Parameters.AddWithValue("@RackId", rental.RackId);
                     cmd.ExecuteNonQuery();
                 }
             }
