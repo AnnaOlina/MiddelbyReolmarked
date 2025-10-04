@@ -26,8 +26,8 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             {
                 conn.Open();
                 var sql = @"INSERT INTO RENTALAGREEMENT 
-                            (StartDate, EndDate, CustomerId, RentalStatusId, RackId) 
-                            VALUES (@Price, @StartDate, @CustomerId, @RentalStatusId, @RackId)";  // Rettet ReolId til RackId
+                            (StartDate, EndDate, CustomerId, RentalStatus, RackId) 
+                            VALUES (@Price, @StartDate, @CustomerId, @RentalStatus, @RackId)";  // Rettet RentalStatusId til RentalStatus, da det nu er en enum.
                 using (var cmd = new SqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@StartDate", rental.StartDate);
@@ -45,7 +45,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             using (var conn = new SqlConnection(_cs))
             {
                 conn.Open();
-                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId, RentalStatusId, RackId 
+                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId, RentalStatus, RackId 
                             FROM RentalAgreements WHERE RentalAgreementId = @Id";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -76,7 +76,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             using (var conn = new SqlConnection(_cs))
             {
                 conn.Open();
-                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId, RentalStatusId, RackId 
+                var sql = @"SELECT RentalAgreementId, StartDate, EndDate, CustomerId, RentalStatus, RackId 
                     FROM RENTALAGREEMENT";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -106,7 +106,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
                 conn.Open();
                 var sql = @"UPDATE RENTALAGREEMENT SET 
                             StartDate = @StartDate, EndDate = @EndDate, CustomerId = @CustomerId, 
-                            RentalStatusId = @RentalStatusId, RackId = @RackId 
+                            RentalStatus = @RentalStatus, RackId = @RackId 
                             WHERE RentalAgreementId = @Id";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
