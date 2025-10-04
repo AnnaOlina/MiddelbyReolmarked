@@ -17,9 +17,12 @@ namespace MiddelbyReolmarked.ViewModels.ViewModelHelpers
             _customerRepository = customerRepository;
         }
 
-        public CustomerViewModel Create(Customer customer)
+        public CustomerViewModel Create(
+            Customer customer,
+            Action onCustomerChanged = null
+        )  // Metodesignatur som tager en Customer som parameter
         {
-            return new CustomerViewModel(_customerRepository, customer);
+            return new CustomerViewModel(_customerRepository, customer, onCustomerChanged);
         }
     }
 }

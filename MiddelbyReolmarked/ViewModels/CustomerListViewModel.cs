@@ -39,5 +39,10 @@ namespace MiddelbyReolmarked.ViewModels
             //var customerViewModel = customerViewModelFactory.Create(customer);
             //mainViewModel.CurrentView = customerViewModel;
         }
+
+        public void RefreshCustomerList()
+        {
+            Customers = new ObservableCollection<Customer>(_customerRepository.GetAllCustomers());
+        }
     }
 }

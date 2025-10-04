@@ -47,7 +47,7 @@
         <!-- Actions -->
         <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0">
             <Button Content="Gem" Width="90" Height="26" Margin="15,0" Command="{Binding SaveCommand}"/>
-            <Button Content="Slet" Width="90" Height="26" Margin="10,0"/>
+            <Button Content="Slet" Width="90" Height="26" Margin="10,0" Command="{Binding DeleteCommand}"/>
         </StackPanel>
 
     </Grid>

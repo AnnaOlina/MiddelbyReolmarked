@@ -52,7 +52,7 @@ namespace MiddelbyReolmarked.ViewModels
             _customerViewModelFactory = customerViewModelFactory;
             customerListViewModel.OnCustomerSelected = (customer) =>
             {
-                CurrentView = _customerViewModelFactory.Create(customer);
+                CurrentView = _customerViewModelFactory.Create(customer, customerListViewModel.RefreshCustomerList);
             };
 
             ShowRentalAgreementViewCommand = new RelayCommand(_ => ShowRentalAgreementView());
@@ -89,7 +89,7 @@ namespace MiddelbyReolmarked.ViewModels
 
         public void ShowCustomerView()
         {
-            CurrentView = _customerViewModelFactory.Create(new Customer());
+            CurrentView = _customerViewModelFactory.Create(new Customer(), _customerListViewModel.RefreshCustomerList);
         }
     }
 }
