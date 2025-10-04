@@ -28,13 +28,14 @@ namespace MiddelbyReolmarked
             var customerRepository = new DbCustomerRepository(connectionString);
             var rackRepository = new DbRackRepository(connectionString);
             var rentalAgreementRepository = new DbRentalAgreementRepository(connectionString);
+            var rentalAgreementRackRepository = new DbRentalAgreementRackRepository(connectionString);
 
             // ViewModels:
             var customerViewModelFactory = new CustomerViewModelFactory(customerRepository);
             var customerListViewModel = new CustomerListViewModel(customerRepository);
             var rackListViewModel = new RackListViewModel(rackRepository);
             var availableRackListViewModel = new RackListViewModel(rackRepository);
-            var rentalAgreementViewModel = new RentalAgreementViewModel(rentalAgreementRepository, rackRepository, customerRepository);
+            var rentalAgreementViewModel = new RentalAgreementViewModel(rentalAgreementRepository, rackRepository, customerRepository, rentalAgreementRackRepository);
             var mainWindowModel = new MainViewModel(
                 rentalAgreementViewModel, 
                 rackListViewModel, 
