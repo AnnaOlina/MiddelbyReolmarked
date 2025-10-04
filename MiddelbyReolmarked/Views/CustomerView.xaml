@@ -21,27 +21,32 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
 
         <!-- Overskrift -->
-        <TextBlock Text="Kundeoplysninger" FontSize="20" FontWeight="Bold" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+        <TextBlock Text="Kundeoplysninger" FontSize="20" FontWeight="Bold" Grid.Row="0" Grid.ColumnSpan="3" 
+                   Margin="30,0,0,20" HorizontalAlignment="Center"/>
+        <TextBlock Text="Rediger lejeroplysninger" FontSize="12" FontWeight="Light"  Grid.Row="0" Grid.ColumnSpan="3" Margin="50,40,0,20" HorizontalAlignment="Center"/>
 
         <!-- Navn -->
         <Label Content="Navn:" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,5" Width="100"/>
-        <TextBox Grid.Row="1" Grid.Column="2" Margin="5,5" Width="200"/>
+        <TextBox Grid.Row="1" Grid.Column="2" Margin="5,5" Width="240"
+                 Text="{Binding CustomerName, UpdateSourceTrigger=PropertyChanged}"/>
 
         <!-- Telefon -->
         <Label Content="Telefon:" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0,5" Width="100"/>
-        <TextBox Grid.Row="2" Grid.Column="2" Margin="5,5" Width="200"/>
+        <TextBox Grid.Row="2" Grid.Column="2" Margin="5,5" Width="240"
+                 Text="{Binding CustomerPhone, UpdateSourceTrigger=PropertyChanged}"/>
 
         <!-- E-mail -->
         <Label Content="E-mail:" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="0,5" Width="100"/>
-        <TextBox Grid.Row="3" Grid.Column="2" Margin="5,5" Width="200"/>
+        <TextBox Grid.Row="3" Grid.Column="2" Margin="5,5" Width="240"
+                 Text="{Binding CustomerEmail, UpdateSourceTrigger=PropertyChanged}"/>
 
         <!-- Actions -->
         <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0">
-            <Button Content="Gem" Width="90" Height="26" Margin="10,0"/>
+            <Button Content="Gem" Width="90" Height="26" Margin="15,0" Command="{Binding SaveCommand}"/>
             <Button Content="Slet" Width="90" Height="26" Margin="10,0"/>
         </StackPanel>
 

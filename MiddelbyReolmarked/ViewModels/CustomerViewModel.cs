@@ -1,22 +1,29 @@
 using System.ComponentModel;
+using System.Windows.Input;
 using MiddelbyReolmarked.Models;
 using MiddelbyReolmarked.Repositories.IRepos;
 using MiddelbyReolmarked.ViewModels.ViewModelHelpers;
 
 namespace MiddelbyReolmarked.ViewModels
 {
-    public class CustomerViewModel : BaseViewModel, IDataErrorInfo
+    public class CustomerViewModel : BaseViewModel
     {
         private readonly ICustomerRepository _customerRepository;
         private Customer _customer;
 
-        public CustomerViewModel(
-            ICustomerRepository customerRepository,
-            Customer customer
-        )
+        private string _errorMessage;
+
+        public string ErrorMessage
         {
-            _customerRepository = customerRepository;
-            _customer = customer;
+            get => _errorMessage;
+            set
+            {
+                if (_errorMessage != value)
+                {
+                    _errorMessage = value;
+                    OnPropertyChanged(nameof(ErrorMessage));
+                }
+            }
         }
 
         public int CustomerId => _customer.CustomerId;
@@ -60,33 +67,47 @@ namespace MiddelbyReolmarked.ViewModels
             }
         }
 
-        // IDataErrorInfo implementation for validation
-        public string this[string columnName]
+        public ICommand SaveCommand { get; }
+
+        public CustomerViewModel(
+            ICustomerRepository customerRepository,
+            Customer customer
+        )
         {
-            get
-            {
-                if (columnName == nameof(CustomerName))
-                {
-                    if (string.IsNullOrWhiteSpace(CustomerName))
-                        return "CustomerName cannot be empty.";
-                }
-                if (columnName == nameof(CustomerEmail))
-                {
-                    if (!string.IsNullOrWhiteSpace(CustomerEmail))
-                    {
-                        if (!CustomerEmail.Contains("@") || !CustomerEmail.Contains("."))
-                            return "Invalid email format.";
-                    }
-                }
-                if (columnName == nameof(CustomerPhone))
-                {
-                    if (string.IsNullOrWhiteSpace(CustomerPhone) || CustomerPhone.Length < 8)
-                        return "Invalid phone number.";
-                }
-                return null;
-            }
+            _customerRepository = customerRepository;
+            _customer = customer;
+            SaveCommand = new RelayCommand(_ => Save());
         }
 
-        public string Error => null;
+        private void Save()
+        {
+            ErrorMessage = "";
+            if (string.IsNullOrWhiteSpace(CustomerName))
+            {
+                ErrorMessage = "CustomerName cannot be empty.";
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(CustomerEmail) || !CustomerEmail.Contains("@") || !CustomerEmail.Contains("."))
+            {
+                ErrorMessage = "Invalid email format.";
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(CustomerPhone) || CustomerPhone.Length < 8)
+            {
+                ErrorMessage = "Invalid phone number.";
+                return;
+            }
+
+            if (_customer.CustomerId == 0)
+            {
+                _customerRepository.AddCustomer(_customer);
+            }
+            else
+            {
+                _customerRepository.UpdateCustomer(_customer);
+            }
+
+            ErrorMessage = "Customer added successfully.";
+        }
     }
 }

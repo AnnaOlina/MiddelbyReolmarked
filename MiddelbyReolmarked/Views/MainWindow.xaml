@@ -7,8 +7,8 @@
         <StackPanel DockPanel.Dock="Left" Width="150" Background="#EEE">
             <Button Content="Udlejning" Command="{Binding ShowRentalAgreementViewCommand}" Margin="5"/>
             <Button Content="Ledige Reoler" Command="{Binding ShowAvailableRacksViewCommand}" Margin="5"/>
-            <Button Content="Reoler" Command="{Binding ShowRackListViewCommand}" Margin="5"/>
-            <Button Content="Lejere" Command="{Binding ShowCustomerListViewCommand}" Margin="5"/>
+            <Button Content="Alle Reoler" Command="{Binding ShowRackListViewCommand}" Margin="5"/>
+            <Button Content="Oversigt Lejer" Command="{Binding ShowCustomerListViewCommand}" Margin="5"/>
             <Button Content="Tilføj Lejer" Command="{Binding ShowCustomerViewCommand}" Margin="5"/>
         </StackPanel>
         <!-- Content area -->
