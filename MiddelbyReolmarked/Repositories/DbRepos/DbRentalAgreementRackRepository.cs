@@ -33,6 +33,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             }
         }
 
+        // Hent alle Rack tilknyttet en specifik RentalAgreementId
         public IEnumerable<RentalAgreementRack> GetByRentalAgreementId(int rentalAgreementId)
         {
             var result = new List<RentalAgreementRack>();
@@ -59,6 +60,7 @@ namespace MiddelbyReolmarked.Repositories.DbRepos
             return result;
         }
 
+        // Hent alle RentalAgreement tilknyttet en specifik RackId
         public IEnumerable<RentalAgreementRack> GetByRackId(int rackId)
         {
             var result = new List<RentalAgreementRack>();

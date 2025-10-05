@@ -12,9 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Extensions.Configuration;
+using MiddelbyReolmarked.Models;
 using MiddelbyReolmarked.Repositories.DbRepos;
 using MiddelbyReolmarked.ViewModels;
-using Microsoft.Extensions.Configuration;
 
 namespace MiddelbyReolmarked.Views
 {
@@ -26,6 +27,18 @@ namespace MiddelbyReolmarked.Views
         public RackListView()
         {
             InitializeComponent();
+        }
+
+
+        public void OnDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not ListView listView)
+                return;
+            if (listView.SelectedItem is not Rack rack)
+                return;
+
+            var viewModel = (RackListViewModel)DataContext;
+            viewModel.SelectRack(rack);
         }
     }
 }

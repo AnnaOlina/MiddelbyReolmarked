@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace MiddelbyReolmarked.Views
 {
     /// <summary>
-    /// Interaction logic for RackView.xaml
+    /// Interaction logic for RentalAgreementListView.xaml
     /// </summary>
-    public partial class RackView : UserControl
+    public partial class RentalAgreementListView : UserControl
     {
-        public RackView()
+        public RentalAgreementListView()
         {
             InitializeComponent();
         }

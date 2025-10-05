@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="MiddelbyReolmarked.Views.RackListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ListView ItemsSource="{Binding Racks}">
+    <ListView ItemsSource="{Binding Racks}" MouseDoubleClick="OnDoubleClick">
         <ListView.View>
             <GridView>
                 <GridViewColumn Header="Reolnummer" DisplayMemberBinding="{Binding RackNumber}"/>

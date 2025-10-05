@@ -1,5 +1,9 @@
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
 using MiddelbyReolmarked.Models;
+using MiddelbyReolmarked.Repositories.DbRepos;
+using MiddelbyReolmarked.Repositories.IRepos;
 using MiddelbyReolmarked.ViewModels.ViewModelHelpers;
 
 namespace MiddelbyReolmarked.ViewModels
@@ -13,18 +17,23 @@ namespace MiddelbyReolmarked.ViewModels
 
     public class RackViewModel : BaseViewModel
     {
+        private readonly IRackRepository _rackRepository;
         private Rack _rack;
         private RackTypeOption _selectedRackType;
+        private MessageBoxResult _messageBoxResult;
 
-        public RackViewModel(Rack rack)
+        private string _errorMessage;
+
+        public string ErrorMessage
         {
-            if (rack == null)
+            get => _errorMessage;
+            set
             {
-                _rack = new Rack();
-            }
-            else
-            {
-                _rack = rack;
+                if (_errorMessage != value)
+                {
+                    _errorMessage = value;
+                    OnPropertyChanged(nameof(ErrorMessage));
+                }
             }
         }
 
@@ -104,32 +113,36 @@ namespace MiddelbyReolmarked.ViewModels
             new RackTypeOption { DisplayName = "3 hylder + bøjlestang", AmountShelves = 3, HangerBar = true }
         };
 
-        // Simpel validering
-        public string this[string columnName]
+        public ICommand SaveCommand { get; }
+        public ICommand DeleteCommand { get; }
+
+        public RackViewModel(IRackRepository rackRepository, Rack rack)
         {
-            get
-            {
-                if (columnName == nameof(RackNumber))
-                {
-                    if (string.IsNullOrWhiteSpace(RackNumber))
-                    {
-                        return "RackNumber skal udfyldes.";
-                    }
-                }
-                if (columnName == nameof(AmountShelves))
-                {
-                    if (AmountShelves != 3 && AmountShelves != 6)
-                    {
-                        return "AmountShelves skal være 3 eller 6.";
-                    }
-                }
-                return null;
-            }
+            _rackRepository = rackRepository;
+            _rack = rack;
+            SaveCommand = new RelayCommand(_ => Save());
+            //DeleteCommand = new RelayCommand(_ => Delete());
         }
 
-        public string Error
+        public void Save()
         {
-            get { return null; }
+            ErrorMessage = "";
+            if (string.IsNullOrWhiteSpace(RackNumber))
+            {
+                ErrorMessage = "Reolnummer skal udfyldes.";
+                MessageBox.Show(ErrorMessage, "Fejl", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (_selectedRackType == null)
+            {
+                ErrorMessage = "Reoltype skal vælges.";
+                MessageBox.Show(ErrorMessage, "Fejl", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            _rackRepository.UpdateRack(_rack);
+            ErrorMessage = "Reol er opdateret.";
+            MessageBox.Show(ErrorMessage, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

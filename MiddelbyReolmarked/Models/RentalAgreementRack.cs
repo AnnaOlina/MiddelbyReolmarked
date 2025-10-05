@@ -10,5 +10,6 @@ namespace MiddelbyReolmarked.Models
     {
         public int RentalAgreementId { get; set; }
         public int RackId { get; set; }
+
     }
 }

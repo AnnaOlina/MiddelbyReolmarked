@@ -13,8 +13,14 @@
         <DataTemplate DataType="{x:Type vm:RentalAgreementViewModel}">
             <views:RentalAgreementView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RentalAgreementListViewModel}">
+            <views:RentalAgreementListView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:CustomerViewModel}">
             <views:CustomerView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RackViewModel}">
+            <views:RackView />
         </DataTemplate>
     </Application.Resources>
 </Application>

@@ -4,6 +4,7 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using MiddelbyReolmarked.Repositories.DbRepos;
 using MiddelbyReolmarked.Repositories.IRepos;
+using MiddelbyReolmarked.Utils;
 using MiddelbyReolmarked.ViewModels;
 using MiddelbyReolmarked.ViewModels.ViewModelHelpers;
 
@@ -24,6 +25,8 @@ namespace MiddelbyReolmarked
 
             var connectionString = config.GetConnectionString("DefaultConnection");
 
+            var currentViewService = new CurrentViewService();
+
             // Repositories:
             var customerRepository = new DbCustomerRepository(connectionString);
             var rackRepository = new DbRackRepository(connectionString);
@@ -31,17 +34,18 @@ namespace MiddelbyReolmarked
             var rentalAgreementRackRepository = new DbRentalAgreementRackRepository(connectionString);
 
             // ViewModels:
-            var customerViewModelFactory = new CustomerViewModelFactory(customerRepository);
-            var customerListViewModel = new CustomerListViewModel(customerRepository);
-            var rackListViewModel = new RackListViewModel(rackRepository);
-            var availableRackListViewModel = new RackListViewModel(rackRepository);
-            var rentalAgreementViewModel = new RentalAgreementViewModel(rentalAgreementRepository, rackRepository, customerRepository, rentalAgreementRackRepository);
+            var viewModelFactory = new ViewModelFactory(customerRepository, rackRepository, rentalAgreementRepository);
+            var customerListViewModel = new CustomerListViewModel(customerRepository, viewModelFactory, currentViewService);
+            var rackListViewModel = new RackListViewModel(rackRepository, viewModelFactory, currentViewService);
+            var availableRackListViewModel = new RackListViewModel(rackRepository, viewModelFactory, currentViewService);
+            var rentalAgreementListViewModel = new RentalAgreementListViewModel(rentalAgreementRepository, rackRepository, customerRepository, rentalAgreementRackRepository, viewModelFactory, currentViewService);
             var mainWindowModel = new MainViewModel(
-                rentalAgreementViewModel, 
-                rackListViewModel, 
-                availableRackListViewModel, 
-                customerListViewModel, 
-                customerViewModelFactory
+                rentalAgreementListViewModel,
+                rackListViewModel,
+                availableRackListViewModel,
+                customerListViewModel,
+                viewModelFactory,
+                currentViewService
             );
 
             //RackInitializer.CreateDefaultRacks(rackRepository);

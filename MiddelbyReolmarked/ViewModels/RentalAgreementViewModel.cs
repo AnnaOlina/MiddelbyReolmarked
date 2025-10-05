@@ -1,5 +1,11 @@
-using System;
+ï»¿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using MiddelbyReolmarked.Models;
 using MiddelbyReolmarked.Repositories.IRepos;
 using MiddelbyReolmarked.ViewModels.ViewModelHelpers;
@@ -9,74 +15,34 @@ namespace MiddelbyReolmarked.ViewModels
     public class RentalAgreementViewModel : BaseViewModel
     {
         private readonly IRentalAgreementRepository _rentalAgreementRepository;
-        private readonly IRackRepository _rackRepository;
         private readonly ICustomerRepository _customerRepository;
-        private readonly IRentalAgreementRackRepository _rentalAgreementRackRepository;
+        private RentalAgreement _rentalAgreement;
+        private readonly Action _onRentalAgreementChanged;
+        private MessageBoxResult _messageBoxResult;
 
-        private ObservableCollection<RentalAgreement> _rentalAgreements;
-        private ObservableCollection<Rack> _selectedRacks;
-        private RentalAgreement _selectedRentalAgreement;
+        public ObservableCollection<Customer> Customers { get; set; } = new ObservableCollection<Customer>();
+
+        private Customer _selectedCustomer;
+
+        public Customer SelectedCustomer
+        {
+            get => _selectedCustomer;
+            set
+            {
+                if (_selectedCustomer != value)
+                {
+                    _selectedCustomer = value;
+                    _rentalAgreement.CustomerId = _selectedCustomer.CustomerId;
+                    OnPropertyChanged(nameof(SelectedCustomer));
+                }
+            }
+        }
+
         private string _errorMessage;
-
-        public RentalAgreementViewModel(
-            IRentalAgreementRepository rentalAgreementRepository,
-            IRackRepository rackRepository,
-            ICustomerRepository customerRepository,
-            IRentalAgreementRackRepository rentalAgreementRackRepository)
-        {
-            _rentalAgreementRepository = rentalAgreementRepository;
-            _rackRepository = rackRepository;
-            _customerRepository = customerRepository;
-            _rentalAgreementRackRepository = rentalAgreementRackRepository;
-
-            _rentalAgreements = new ObservableCollection<RentalAgreement>();
-            _selectedRacks = new ObservableCollection<Rack>();
-            LoadRentalAgreements();
-        }
-
-        public ObservableCollection<RentalAgreement> RentalAgreements
-        {
-            get { return _rentalAgreements; }
-            set
-            {
-                if (_rentalAgreements != value)
-                {
-                    _rentalAgreements = value;
-                    OnPropertyChanged(nameof(RentalAgreements));
-                }
-            }
-        }
-
-        public ObservableCollection<Rack> SelectedRacks
-        {
-            get { return _selectedRacks; }
-            set
-            {
-                if (_selectedRacks != value)
-                {
-                    _selectedRacks = value;
-                    OnPropertyChanged(nameof(SelectedRacks));
-                }
-            }
-        }
-
-        public RentalAgreement SelectedRentalAgreement
-        {
-            get { return _selectedRentalAgreement; }
-            set
-            {
-                if (_selectedRentalAgreement != value)
-                {
-                    _selectedRentalAgreement = value;
-                    OnPropertyChanged(nameof(SelectedRentalAgreement));
-                    ErrorMessage = "";
-                }
-            }
-        }
 
         public string ErrorMessage
         {
-            get { return _errorMessage; }
+            get => _errorMessage;
             set
             {
                 if (_errorMessage != value)
@@ -87,96 +53,107 @@ namespace MiddelbyReolmarked.ViewModels
             }
         }
 
-        // Hent alle lejeaftaler
-        public void LoadRentalAgreements()
-        {
-            RentalAgreements.Clear();
-            var agreementsFromRepo = _rentalAgreementRepository.GetAllRentalAgreements();
-            foreach (var agreement in agreementsFromRepo)
-            {
-                RentalAgreements.Add(agreement);
-            }
-        }
+        public int RentalAgreementId => _rentalAgreement.RentalAgreementId;
 
-        // Hent reoler til en given lejeaftale
-        public ObservableCollection<Rack> LoadRacksForAgreement(int rentalAgreementId)
+        public DateTime StartDate
         {
-            var racks = new ObservableCollection<Rack>();
-            var links = _rentalAgreementRackRepository.GetByRentalAgreementId(rentalAgreementId);
-            foreach (var rar in links)
+            get => _rentalAgreement.StartDate;
+            set
             {
-                var rack = _rackRepository.GetRackById(rar.RackId);
-                if (rack != null)
+                if (_rentalAgreement.StartDate != value)
                 {
-                    racks.Add(rack);
+                    _rentalAgreement.StartDate = value;
+                    OnPropertyChanged(nameof(StartDate));
                 }
             }
-            return racks;
         }
 
-        // Opret ny lejeaftale og tilknyt reoler via linking-tabel
-        public void AddRentalAgreement(RentalAgreement newAgreement)
+        public DateTime? EndDate
+        {
+            get => _rentalAgreement.EndDate;
+            set
+            {
+                if (_rentalAgreement.EndDate != value)
+                {
+                    _rentalAgreement.EndDate = value;
+                    OnPropertyChanged(nameof(EndDate));
+                }
+            }
+        }
+
+        public int CustomerId
+        {
+            get => _rentalAgreement.CustomerId;
+            set
+            {
+                if (_rentalAgreement.CustomerId != value)
+                {
+                    _rentalAgreement.CustomerId = value;
+                    OnPropertyChanged(nameof(CustomerId));
+                }
+            }
+        }
+
+        public decimal MonthlyPrice
+        {
+            get => 850;
+        }
+
+        public ICommand SaveCommand { get; }
+        public ICommand DeleteCommand { get; }
+
+        public RentalAgreementViewModel(
+            IRentalAgreementRepository rentalAgreementRepository, 
+            ICustomerRepository customerRepository, 
+            RentalAgreement rentalAgreement, 
+            Action onRentalAgreementChanged
+        )
+        {
+            _rentalAgreementRepository = rentalAgreementRepository;
+            _customerRepository = customerRepository;
+            _rentalAgreement = rentalAgreement ?? new RentalAgreement { StartDate = DateTime.Today };
+            _onRentalAgreementChanged = onRentalAgreementChanged;
+            SaveCommand = new RelayCommand(_ => Save());
+            //DeleteCommand = new RelayCommand(Delete);
+
+            Customers = new ObservableCollection<Customer>(_customerRepository.GetAllCustomers());
+        }
+
+        private void Save()
         {
             ErrorMessage = "";
-
-            if (newAgreement == null)
+            if (_rentalAgreement == null)
             {
                 ErrorMessage = "Lejeaftale mangler.";
                 return;
             }
-            if (newAgreement.CustomerId <= 0)
+            if (_rentalAgreement.CustomerId <= 0)
             {
-                ErrorMessage = "Vælg en kunde.";
+                ErrorMessage = "VÃ¦lg en kunde.";
                 return;
             }
-            if (newAgreement.StartDate == DateTime.MinValue)
+            if (_rentalAgreement.StartDate == DateTime.MinValue)
             {
-                ErrorMessage = "Vælg startdato.";
+                ErrorMessage = "VÃ¦lg startdato.";
                 return;
             }
-            if (SelectedRacks == null || SelectedRacks.Count == 0)
+            if (_rentalAgreement.EndDate.HasValue && _rentalAgreement.EndDate < _rentalAgreement.StartDate)
             {
-                ErrorMessage = "Vælg mindst én reol.";
+                ErrorMessage = "Slutdato kan ikke vÃ¦re fÃ¸r startdato.";
                 return;
             }
 
-            // Opret lejeaftale
-            _rentalAgreementRepository.AddRentalAgreement(newAgreement);
-
-            // Find lejeaftalens id (fx ved at hente det sidste oprettede, eller ændre AddRentalAgreement til at returnere id)
-            var agreementId = newAgreement.RentalAgreementId; // Hvis id genereres i AddRentalAgreement
-
-            // Tilknyt racks via linking-tabel
-            foreach (var rack in SelectedRacks)
+            if (_rentalAgreement.RentalAgreementId == 0)
             {
-                _rentalAgreementRackRepository.AddRentalAgreementRack(new RentalAgreementRack
-                {
-                    RentalAgreementId = agreementId,
-                    RackId = rack.RackId
-                });
+                _rentalAgreementRepository.AddRentalAgreement(_rentalAgreement);
             }
-
-            LoadRentalAgreements();
+            else
+            {
+                _rentalAgreementRepository.UpdateRentalAgreement(_rentalAgreement);
+            }
+            _onRentalAgreementChanged?.Invoke();
         }
-             
-        // Afslut lejeaftale (sæt slutdato)
-        public void EndRentalAgreement(RentalAgreement agreement, DateTime endDate)
-        {
-            ErrorMessage = "";
 
-            if (agreement == null)
-            {
-                ErrorMessage = "Vælg en lejeaftale.";
-                return;
-            }
-            if (endDate <= agreement.StartDate)
-            {
-                ErrorMessage = "Slutdato skal være efter startdato.";
-                return;
-            }
-            agreement.EndDate = endDate;
-            _rentalAgreementRepository.UpdateRentalAgreement(agreement);
-            LoadRentalAgreements();
-        }
+
     }
 }
